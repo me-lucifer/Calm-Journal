@@ -23,7 +23,7 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <PhoneFrame>
-          {children}
+            {children}
         </PhoneFrame>
         <Toaster />
       </body>
