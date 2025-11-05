@@ -1,9 +1,11 @@
-import React from 'react';
+'use client';
+
+import { AppLayout } from '@/components/AppLayout';
 
 export default function HomeLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return <AppLayout title="Home">{children}</AppLayout>;
 }

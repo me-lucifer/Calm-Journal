@@ -1,45 +1,131 @@
-import { generateDailyWritingPrompt } from '@/ai/flows/daily-writing-prompt';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { JournalEntryCard } from '@/components/JournalEntryCard';
-import { mockEntries } from '@/lib/data';
-import { Lightbulb, Plus } from 'lucide-react';
-import Link from 'next/link';
+'use client';
 
-export default async function HomePage() {
-  const { prompt } = await generateDailyWritingPrompt();
+import {
+  Book,
+  ClipboardList,
+  Clapperboard,
+  Smile,
+} from 'lucide-react';
+import Link from 'next/link';
+import { useToast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+
+function formatDate(date: Date) {
+  return new Intl.DateTimeFormat('en-US', {
+    dateStyle: 'full',
+  }).format(date);
+}
+
+export default function HomePage() {
+  const { toast } = useToast();
+  const today = new Date();
 
   return (
-    <div className="relative h-full p-6 pb-24">
-      <div className="space-y-8">
-        <Card className="bg-primary/10 border-primary/20">
-          <CardHeader className="flex flex-row items-center gap-4 space-y-0 pb-2">
-            <Lightbulb className="h-6 w-6 text-primary" />
-            <CardTitle className="font-headline text-lg text-primary">Today's Prompt</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-primary/90">{prompt}</p>
-          </CardContent>
-        </Card>
+    <div className="flex h-full flex-col">
+      <main className="flex-1 overflow-y-auto p-6">
+        <div className="space-y-6">
+          <div>
+            <h2 className="text-2xl font-headline text-foreground">
+              Welcome back
+            </h2>
+            <p className="text-muted-foreground">{formatDate(today)}</p>
+          </div>
 
-        <div>
-          <h2 className="font-headline text-2xl text-foreground mb-4">Recent Entries</h2>
-          <div className="space-y-4">
-            {mockEntries.map((entry) => (
-              <JournalEntryCard key={entry.id} entry={entry} />
-            ))}
+          <div className="grid grid-cols-2 gap-4">
+            <DashboardCard
+              title="Quick Journal"
+              href="/new"
+              icon={Book}
+              buttonText="Write"
+            />
+            <DashboardCard
+              title="Mood Today"
+              href="#"
+              icon={Smile}
+              buttonText="Log"
+              onClick={() =>
+                toast({
+                  title: 'Mood Logged',
+                  description: "You're feeling great today!",
+                })
+              }
+            />
+            <DashboardCard
+              title="Recent Pages"
+              href="#"
+              icon={ClipboardList}
+              buttonText="View"
+              onClick={() =>
+                toast({
+                  title: 'Coming Soon',
+                  description: 'This feature is not yet available.',
+                })
+              }
+            />
+             <DashboardCard
+              title="Vision Board"
+              href="#"
+              icon={Clapperboard}
+              buttonText="Continue"
+              onClick={() =>
+                toast({
+                  title: 'Coming Soon',
+                  description: 'This feature is not yet available.',
+                })
+              }
+            />
           </div>
         </div>
-      </div>
-
-      <div className="absolute bottom-24 right-6">
-        <Button asChild size="lg" className="rounded-full w-16 h-16 shadow-lg">
-          <Link href="/new">
-            <Plus className="h-8 w-8" />
-            <span className="sr-only">New Entry</span>
-          </Link>
-        </Button>
-      </div>
+      </main>
     </div>
+  );
+}
+
+function DashboardCard({
+  title,
+  href,
+  icon: Icon,
+  buttonText,
+  onClick,
+}: {
+  title: string;
+  href: string;
+  icon: React.ElementType;
+  buttonText: string;
+  onClick?: () => void;
+}) {
+  const cardContent = (
+    <Card className="h-full transform transition-transform hover:scale-105 active:scale-95">
+      <CardHeader className="p-4">
+        <Icon className="h-6 w-6 text-primary" />
+      </CardHeader>
+      <CardContent className="p-4 pt-0">
+        <CardTitle className="mb-2 text-base font-headline">{title}</CardTitle>
+        <Button
+          size="sm"
+          className="w-full"
+          variant="secondary"
+          onClick={(e) => {
+            if (onClick && href === '#') {
+              e.preventDefault();
+              onClick();
+            }
+          }}
+        >
+          {buttonText}
+        </Button>
+      </CardContent>
+    </Card>
+  );
+
+  if (href === '#') {
+    return <div onClick={onClick}>{cardContent}</div>
+  }
+
+  return (
+    <Link href={href}>
+      {cardContent}
+    </Link>
   );
 }
