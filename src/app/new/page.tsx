@@ -11,7 +11,7 @@ export default async function NewEntryPage() {
     <div className="flex h-full flex-col bg-background">
       <header className="flex shrink-0 items-center p-4 border-b">
         <Button asChild variant="ghost" size="icon" className="h-9 w-9">
-          <Link href="/">
+          <Link href="/home">
             <ArrowLeft className="h-5 w-5" />
             <span className="sr-only">Back</span>
           </Link>

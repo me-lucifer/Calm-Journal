@@ -29,7 +29,7 @@ export function NewEntryForm({ prompt }: { prompt: string }) {
     // In a real app, we'd save the data.
     // For this prototype, we just navigate back to the home page.
     console.log({ emotion: selectedEmotion, content });
-    router.push('/');
+    router.push('/home');
   };
 
   return (

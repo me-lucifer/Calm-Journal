@@ -1,3 +1,22 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "onboarding-1",
+      "description": "A person writing in a journal.",
+      "imageUrl": "https://images.unsplash.com/photo-1526280760714-f9e8b26f318f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxqb3VybmFsJTIwd3JpdGluZ3xlbnwwfHx8fDE3NjIyOTUzNzJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "journal writing"
+    },
+    {
+      "id": "onboarding-2",
+      "description": "A selection of emoji faces showing different moods.",
+      "imageUrl": "https://images.unsplash.com/photo-1736950927862-83dde2a6822d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxlbW9qaSUyMG1vb2R8ZW58MHx8fHwxNzYyMzQzMzcyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "emoji mood"
+    },
+    {
+      "id": "onboarding-3",
+      "description": "A collage of inspiring images for a vision board.",
+      "imageUrl": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8dmlzaW9uJTIwYm9hcmR8ZW58MHx8fHwxNzYyMzQzMzcxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "vision board"
+    }
+  ]
 }
