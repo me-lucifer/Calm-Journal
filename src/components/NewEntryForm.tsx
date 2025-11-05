@@ -1,91 +1,155 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import type { Emotion } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { Smile, Frown, Angry, Zap, Leaf, Lightbulb } from "lucide-react";
+import { Pen, Type } from 'lucide-react';
 
-const emotions: Emotion[] = ['Happy', 'Sad', 'Angry', 'Calm', 'Excited'];
-
-const emotionIcons: Record<Emotion, React.ElementType> = {
-  Happy: Smile,
-  Sad: Frown,
-  Angry: Angry,
-  Excited: Zap,
-  Calm: Leaf,
-};
-
-export function NewEntryForm({ prompt }: { prompt: string }) {
+export function NewEntryForm() {
+  const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [selectedEmotion, setSelectedEmotion] = useState<Emotion | null>(null);
+  const [isHandwriting, setIsHandwriting] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [isDrawing, setIsDrawing] = useState(false);
   const router = useRouter();
+
+  const getCanvasContext = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return null;
+    return canvas.getContext('2d');
+  };
+  
+  useEffect(() => {
+    const ctx = getCanvasContext();
+    if (ctx) {
+      ctx.strokeStyle = '#2C2C2C'; // Graphite
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+    }
+  }, [isHandwriting]);
+
+
+  const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    const ctx = getCanvasContext();
+    if (!ctx) return;
+    setIsDrawing(true);
+    const pos = getEventPosition(e);
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+  };
+
+  const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    if (!isDrawing) return;
+    const ctx = getCanvasContext();
+    if (!ctx) return;
+    const pos = getEventPosition(e);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+  };
+
+  const stopDrawing = () => {
+    const ctx = getCanvasContext();
+    if (!ctx) return;
+    ctx.closePath();
+    setIsDrawing(false);
+  };
+
+  const getEventPosition = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current!;
+    const rect = canvas.getBoundingClientRect();
+    if ('touches' in e.nativeEvent) {
+      return {
+        x: e.nativeEvent.touches[0].clientX - rect.left,
+        y: e.nativeEvent.touches[0].clientY - rect.top
+      };
+    }
+    return {
+      x: e.nativeEvent.offsetX,
+      y: e.nativeEvent.offsetY,
+    };
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, we'd save the data.
-    // For this prototype, we just navigate back to the home page.
-    console.log({ emotion: selectedEmotion, content });
+    console.log({ title, content, isHandwriting });
+    toast({
+      title: 'Saved locally',
+      description: 'Your journal entry has been saved.',
+    });
     router.push('/home');
   };
 
-  return (
-    <form onSubmit={handleSubmit} className="space-y-8 h-full flex flex-col">
-      <div className="space-y-6 flex-1">
-        <Card className="bg-primary/10 border-primary/20">
-          <CardHeader className="flex flex-row items-center gap-4 space-y-0 pb-2">
-            <Lightbulb className="w-5 h-5 text-primary" />
-            <CardTitle className="font-headline text-lg text-primary">Today's Prompt</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-primary/90">{prompt}</p>
-          </CardContent>
-        </Card>
+  const isSaveDisabled = title.trim() === '' || (!isHandwriting && content.trim() === '');
 
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6 h-full flex flex-col">
+      <div className="space-y-6 flex-1">
         <div>
-          <label htmlFor="content" className="font-headline text-lg text-foreground mb-2 block">
-            Your Thoughts
-          </label>
+          <Label htmlFor="title" className="font-headline text-lg text-foreground mb-2 block">
+            Title
+          </Label>
+          <Input
+            id="title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="A title for your entry"
+            className="text-base"
+            required
+          />
+        </div>
+
+        <div className="flex items-center justify-between">
+          <Label htmlFor="handwriting-toggle" className="font-headline text-lg text-foreground">
+            {isHandwriting ? 'Handwriting' : 'Your Thoughts'}
+          </Label>
+          <div className="flex items-center gap-2">
+            <Type className={cn("h-5 w-5", !isHandwriting ? "text-primary" : "text-muted-foreground")} />
+            <Switch
+              id="handwriting-toggle"
+              checked={isHandwriting}
+              onCheckedChange={setIsHandwriting}
+            />
+            <Pen className={cn("h-5 w-5", isHandwriting ? "text-primary" : "text-muted-foreground")} />
+          </div>
+        </div>
+
+        {isHandwriting ? (
+          <div className="w-full rounded-md border border-input bg-background aspect-video">
+            <canvas
+              ref={canvasRef}
+              width="600"
+              height="400"
+              className="w-full h-full rounded-md"
+              onMouseDown={startDrawing}
+              onMouseMove={draw}
+              onMouseUp={stopDrawing}
+              onMouseLeave={stopDrawing}
+              onTouchStart={startDrawing}
+              onTouchMove={draw}
+              onTouchEnd={stopDrawing}
+            />
+          </div>
+        ) : (
           <Textarea
             id="content"
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="Write about your day..."
-            className="min-h-[200px] text-base"
-            required
+            className="min-h-[250px] text-base leading-relaxed"
+            required={!isHandwriting}
           />
-        </div>
-
-        <div>
-          <h3 className="font-headline text-lg text-foreground mb-3">How are you feeling?</h3>
-          <div className="flex flex-wrap gap-2">
-            {emotions.map((emotion) => {
-              const Icon = emotionIcons[emotion];
-              return (
-                <Button
-                  key={emotion}
-                  type="button"
-                  variant={selectedEmotion === emotion ? 'default' : 'outline'}
-                  onClick={() => setSelectedEmotion(emotion)}
-                  className={cn(
-                    'rounded-full transition-all',
-                    selectedEmotion === emotion && 'shadow-md'
-                  )}
-                >
-                  <Icon className="mr-2 h-4 w-4" />
-                  {emotion}
-                </Button>
-              );
-            })}
-          </div>
-        </div>
+        )}
       </div>
       
       <div className="sticky bottom-0 bg-background py-4">
-        <Button type="submit" size="lg" className="w-full" disabled={!selectedEmotion || content.trim() === ''}>
+        <Button type="submit" size="lg" className="w-full" disabled={isSaveDisabled}>
           Save Entry
         </Button>
       </div>
