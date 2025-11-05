@@ -26,3 +26,11 @@ export interface Exercise {
   hasDrawPad: boolean;
   isDone: boolean;
 }
+
+export type Mood = 'Happy' | 'Calm' | 'Focused' | 'Sad' | 'Angry' | 'Tired';
+
+export interface MoodLog {
+  date: string; // YYYY-MM-DD
+  mood: Emotion;
+  note?: string;
+}
