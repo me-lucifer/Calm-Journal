@@ -6,11 +6,11 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { href: '/home', icon: Home, label: 'Home' },
-  { href: '/pages', icon: BookCopy, label: 'Pages' },
-  { href: '/exercises', icon: HeartPulse, label: 'Exercises' },
-  { href: '/planner', icon: Calendar, label: 'Planner' },
-  { href: '/vision-board', icon: ImageIcon, label: 'Vision' },
+  { href: '/home', label: 'Home', icon: Home },
+  { href: '/pages', label: 'Pages', icon: BookCopy },
+  { href: '/exercises', label: 'Exercises', icon: HeartPulse },
+  { href: '/planner', label: 'Planner', icon: Calendar },
+  { href: '/vision-board', label: 'Vision', icon: ImageIcon },
 ];
 
 export function AppLayout({
@@ -37,7 +37,7 @@ export function AppLayout({
       <nav className="shrink-0 border-t bg-card">
         <div className="mx-auto flex h-16 max-w-md items-center justify-around">
           {navItems.map(({ href, icon: Icon, label }) => {
-            const isActive = pathname.startsWith(href);
+            const isActive = pathname === href || (href !== '/home' && pathname.startsWith(href));
             return (
               <Link
                 key={label}
