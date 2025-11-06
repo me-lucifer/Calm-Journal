@@ -153,7 +153,7 @@ export function VisionBoard() {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex-1 relative overflow-hidden bg-secondary/30" ref={boardRef} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
+      <div id="tour-vision-board-canvas" className="flex-1 relative overflow-hidden bg-secondary/30" ref={boardRef} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
         <div
           className="relative w-full h-full origin-top-left"
           style={{ transform: `scale(${zoom})` }}

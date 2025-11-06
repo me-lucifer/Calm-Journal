@@ -130,7 +130,7 @@ export function NewEntryForm() {
           />
         </div>
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between" id="tour-handwriting-toggle">
           <Label htmlFor="handwriting-toggle" className="font-headline text-lg text-foreground">
             {isHandwriting ? 'Handwriting' : 'Your Thoughts'}
           </Label>

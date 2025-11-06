@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
+import { AppTour } from '@/components/AppTour';
 
 function formatDate(date: Date) {
   return new Intl.DateTimeFormat('en-US', {
@@ -29,6 +30,7 @@ export default function HomePage() {
 
   return (
     <div className="flex h-full flex-col">
+      <AppTour />
       <main className="flex-1 overflow-y-auto p-6">
         <div className="space-y-6">
           <div>
@@ -44,6 +46,7 @@ export default function HomePage() {
               href="/new"
               icon={Book}
               buttonText="Write"
+              id="tour-quick-journal"
             />
             <DashboardCard
               title="Mood Today"
@@ -51,6 +54,7 @@ export default function HomePage() {
               icon={Smile}
               buttonText="Log"
               onClick={handleMoodClick}
+              id="tour-mood-today"
             />
             <DashboardCard
               title="Recent Pages"
@@ -63,6 +67,7 @@ export default function HomePage() {
               href="/vision-board"
               icon={Clapperboard}
               buttonText="Continue"
+              id="tour-vision-board"
             />
           </div>
         </div>
@@ -77,15 +82,17 @@ function DashboardCard({
   icon: Icon,
   buttonText,
   onClick,
+  id,
 }: {
   title: string;
   href: string;
   icon: React.ElementType;
   buttonText: string;
   onClick?: () => void;
+  id?: string;
 }) {
   const cardContent = (
-    <Card className="h-full transform transition-transform hover:scale-105 active:scale-95">
+    <Card id={id} className="h-full transform transition-transform hover:scale-105 active:scale-95">
       <CardHeader className="p-4">
         <Icon className="h-6 w-6 text-primary" />
       </CardHeader>

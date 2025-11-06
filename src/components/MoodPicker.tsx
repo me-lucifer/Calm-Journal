@@ -40,7 +40,7 @@ export function MoodPicker() {
   };
 
   return (
-    <Card>
+    <Card id="tour-mood-picker">
       <CardHeader>
         <CardTitle className="font-headline text-xl">How are you feeling today?</CardTitle>
       </CardHeader>
