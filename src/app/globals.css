@@ -23,7 +23,7 @@
     --border: 338 33% 88%; /* Blush-adjacent border */
     --input: 345 100% 99%; /* Cream for inputs */
     --ring: 350 27% 61%; /* Rose */
-    --radius: 0.75rem;
+    --radius: 9999px; /* Changed to full for rounded buttons */
 
     /* Chart colors */
     --chart-1: 12 76% 61%;
@@ -60,7 +60,7 @@
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
     --ring: 350 27% 61%;
-    --radius: 0.75rem;
+    --radius: 9999px; /* Changed to full for rounded buttons */
 
     /* Chart colors */
     --chart-1: 220 70% 50%;
@@ -84,5 +84,7 @@
   }
   body {
     @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }

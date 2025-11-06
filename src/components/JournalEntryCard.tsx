@@ -11,11 +11,11 @@ function formatDate(dateString: string) {
 
 export function JournalEntryCard({ entry }: { entry: JournalEntry }) {
   return (
-    <Card className="shadow-md hover:shadow-lg transition-shadow duration-300 border">
+    <Card className="h-full transition-shadow duration-300 hover:shadow-lg hover:shadow-black/10">
       <CardHeader>
         <div className="flex justify-between items-start">
           <div>
-            <CardTitle className="font-headline text-lg">{formatDate(entry.date)}</CardTitle>
+            <CardTitle className="font-headline text-xl">{formatDate(entry.date)}</CardTitle>
           </div>
           <EmotionChip emotion={entry.emotion} />
         </div>

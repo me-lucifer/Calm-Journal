@@ -62,48 +62,51 @@ export function OnboardingFlow() {
 
   return (
     <div className="flex h-full flex-col bg-background p-6">
-      <Carousel setApi={setApi} className="flex-1">
+      <div className="w-full text-right h-10">
+        {current < onboardingSteps.length - 1 && (
+            <Button onClick={handleSkip} variant="ghost" className="text-muted-foreground">
+                Skip
+            </Button>
+        )}
+      </div>
+      <Carousel setApi={setApi} className="flex-1 -mt-10">
         <CarouselContent>
           {onboardingSteps.map((step, index) => (
             <CarouselItem key={index} className="flex flex-col items-center justify-center text-center">
-              <div className="relative mb-4">
+              <div className="relative mb-8">
                 <Image
                   src={step.image.imageUrl}
                   alt={step.image.description}
                   width={600}
                   height={400}
-                  className="aspect-video w-full max-w-[300px] rounded-lg object-cover"
+                  className="aspect-video w-full max-w-xs rounded-2xl object-cover shadow-lg shadow-black/10"
                   data-ai-hint={step.image.imageHint}
+                  priority={index === 0}
                 />
-                <div className="absolute -bottom-2 -right-2 rounded-full bg-card p-2 shadow-md">
-                  <Camera className="h-5 w-5 text-muted-foreground" />
+                <div className="absolute -bottom-3 -right-3 rounded-full bg-card p-3 shadow-md border">
+                  <Camera className="h-6 w-6 text-muted-foreground" />
                 </div>
               </div>
-              <h2 className="font-headline text-2xl text-foreground mt-4">{step.headline}</h2>
-              <p className="text-muted-foreground mt-2 max-w-xs">{step.body}</p>
+              <h2 className="font-headline text-3xl text-foreground mt-4">{step.headline}</h2>
+              <p className="text-muted-foreground mt-2 max-w-xs text-base">{step.body}</p>
             </CarouselItem>
           ))}
         </CarouselContent>
       </Carousel>
 
-      <div className="flex flex-col items-center gap-6">
-        <div className="flex gap-2">
+      <div className="flex flex-col items-center gap-6 mt-4">
+        <div className="flex gap-2.5">
           {onboardingSteps.map((_, index) =>
             index === current ? (
-              <CircleDot key={index} className="h-4 w-4 text-primary" />
+              <CircleDot key={index} className="h-3 w-3 text-primary transition-all" />
             ) : (
-              <Circle key={index} className="h-4 w-4 text-primary/30" />
+              <Circle key={index} className="h-3 w-3 text-primary/30 transition-all" />
             )
           )}
         </div>
         <Button onClick={handleNext} size="lg" className="w-full">
           {current === onboardingSteps.length - 1 ? 'Enter App' : 'Next'}
         </Button>
-        {current < onboardingSteps.length - 1 && (
-          <Button onClick={handleSkip} variant="ghost" className="text-muted-foreground">
-            Skip
-          </Button>
-        )}
       </div>
     </div>
   );
