@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -24,11 +25,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Moon, Sun } from 'lucide-react';
+import { Moon, Sun, Eye } from 'lucide-react';
+import { useLocalStorage } from '@/hooks/use-local-storage';
 
 export default function SettingsPage() {
   const { setTheme, theme } = useTheme();
   const [isDark, setIsDark] = useState(theme === 'dark');
+  const [isReviewMode, setIsReviewMode] = useLocalStorage('owner-review-mode', false);
 
   const handleThemeChange = (checked: boolean) => {
     const newTheme = checked ? 'dark' : 'light';
@@ -36,12 +39,17 @@ export default function SettingsPage() {
     setIsDark(checked);
   };
 
+  const handleReviewModeChange = (checked: boolean) => {
+    setIsReviewMode(checked);
+  };
+
   return (
     <div className="p-6">
       <Tabs defaultValue="appearance" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="appearance">Appearance</TabsTrigger>
           <TabsTrigger value="account">Account</TabsTrigger>
+          <TabsTrigger value="owner">Owner</TabsTrigger>
         </TabsList>
         <TabsContent value="appearance">
           <Card>
@@ -121,6 +129,33 @@ export default function SettingsPage() {
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
+            </CardContent>
+          </Card>
+        </TabsContent>
+         <TabsContent value="owner">
+          <Card>
+            <CardHeader>
+              <CardTitle>Owner Settings</CardTitle>
+              <CardDescription>
+                Internal settings for demonstration purposes.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex items-center justify-between rounded-lg border p-4">
+                <div>
+                  <Label htmlFor="review-mode" className="text-base flex items-center gap-2">
+                    <Eye className="h-5 w-5" /> Owner Review Mode
+                  </Label>
+                  <p className="text-sm text-muted-foreground">
+                    Shows a debug ribbon on all screens for client reviews.
+                  </p>
+                </div>
+                <Switch
+                  id="review-mode"
+                  checked={isReviewMode}
+                  onCheckedChange={handleReviewModeChange}
+                />
+              </div>
             </CardContent>
           </Card>
         </TabsContent>

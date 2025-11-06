@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Home, BookCopy, HeartPulse, Calendar, Image as ImageIcon, Settings } from 'lucide-react';
@@ -6,6 +7,8 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import React from 'react';
+import { useLocalStorage } from '@/hooks/use-local-storage';
+import { OwnerReviewRibbon } from './OwnerReviewRibbon';
 
 const navItems = [
   { href: '/home', label: 'Home', icon: Home },
@@ -19,6 +22,10 @@ type AppLayoutProps = {
   children: React.ReactNode;
   title: string;
   status?: 'idle' | 'saving' | 'saved';
+  review?: {
+    screenName: string;
+    keyInteractions: string[];
+  }
 };
 
 export const AppLayoutContext = React.createContext<{
@@ -28,16 +35,22 @@ export const AppLayoutContext = React.createContext<{
 export function AppLayout({
   children,
   title,
-}: {
-  children: React.ReactNode;
-  title: string;
-}) {
+  review,
+}: AppLayoutProps) {
   const pathname = usePathname();
   const [status, setStatus] = React.useState<'idle' | 'saving' | 'saved'>('idle');
+  const [isReviewMode] = useLocalStorage('owner-review-mode', false);
 
   return (
     <AppLayoutContext.Provider value={{ setStatus }}>
         <div className="flex h-full flex-col bg-background">
+          {isReviewMode && review && (
+            <OwnerReviewRibbon 
+              screenName={review.screenName}
+              keyInteractions={review.keyInteractions}
+            />
+          )}
+
           <header className="flex h-16 shrink-0 items-center justify-between border-b px-4 sm:px-6">
             <div className="flex items-center gap-2">
                 <h1 className="font-headline text-xl text-foreground">{title}</h1>
