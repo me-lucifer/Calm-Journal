@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useContext, useCallback } from 'react';
 import Image from 'next/image';
-import { Plus, Trash2, Image as ImageIcon, Link, Download } from 'lucide-react';
+import { Plus, Trash2, Image as ImageIcon, Link, Download, Clapperboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
@@ -150,38 +150,91 @@ export function VisionBoard() {
   const handleExport = () => {
     toast({ title: 'Exporting...', description: 'Your vision board is being prepared as an image.'});
   }
+  
+  const addImageAction = (
+     <Dialog>
+        <DialogTrigger asChild>
+            <Button variant="outline"><Plus className="mr-2 h-4 w-4" /> Add Image</Button>
+        </DialogTrigger>
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Add an Image</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+                 <Button variant="outline" className="w-full" onClick={() => toast({ title: 'File Picker Mock', description: 'In a real app, this would open a file dialog.' })}>
+                    <ImageIcon className="mr-2 h-4 w-4" /> Upload from Device
+                </Button>
+                <form onSubmit={handleAddFromUrl} className="flex gap-2">
+                    <Input name="imageUrl" placeholder="Paste image URL..." />
+                    <Button type="submit" size="icon"><Link className="h-4 w-4" /></Button>
+                </form>
+            </div>
+        </DialogContent>
+    </Dialog>
+  );
 
   return (
     <div className="flex h-full flex-col">
       <div id="tour-vision-board-canvas" className="flex-1 relative overflow-hidden bg-secondary/30" ref={boardRef} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
-        <div
-          className="relative w-full h-full origin-top-left"
-          style={{ transform: `scale(${zoom})` }}
-        >
-          {images.map(image => (
-            <div
-              key={image.id}
-              className={cn(
-                "absolute cursor-grab rounded-lg shadow-md transition-shadow duration-200",
-                draggingImage === image.id ? 'shadow-2xl z-10 cursor-grabbing' : 'hover:shadow-lg'
-              )}
-              style={{
-                left: image.position.x,
-                top: image.position.y,
-                width: image.size.width,
-                height: image.size.height,
-              }}
-              onMouseDown={(e) => handleMouseDown(e, image.id)}
-            >
-              <Image
-                src={image.src}
-                alt={image.alt}
-                fill
-                className="object-cover rounded-lg pointer-events-none"
-              />
+        {images.length > 0 ? (
+             <div
+                className="relative w-full h-full origin-top-left"
+                style={{ transform: `scale(${zoom})` }}
+                >
+                {images.map(image => (
+                    <div
+                    key={image.id}
+                    className={cn(
+                        "absolute cursor-grab rounded-lg shadow-md transition-shadow duration-200",
+                        draggingImage === image.id ? 'shadow-2xl z-10 cursor-grabbing' : 'hover:shadow-lg'
+                    )}
+                    style={{
+                        left: image.position.x,
+                        top: image.position.y,
+                        width: image.size.width,
+                        height: image.size.height,
+                    }}
+                    onMouseDown={(e) => handleMouseDown(e, image.id)}
+                    >
+                    <Image
+                        src={image.src}
+                        alt={image.alt}
+                        fill
+                        className="object-cover rounded-lg pointer-events-none"
+                    />
+                    </div>
+                ))}
             </div>
-          ))}
-        </div>
+        ) : (
+             <div className="flex flex-col items-center justify-center h-full text-center p-6">
+                <div className="flex items-center justify-center w-20 h-20 rounded-full bg-background mb-6">
+                    <Clapperboard className="w-10 h-10 text-primary" />
+                </div>
+                <h2 className="font-headline text-2xl text-foreground">Your vision board is empty</h2>
+                <p className="text-muted-foreground mt-2 max-w-xs">No images yet. Add your first inspiration to get started!</p>
+                <div className="mt-8">
+                     <Dialog>
+                        <DialogTrigger asChild>
+                           <Button size="lg"><Plus className="mr-2 h-4 w-4" /> Add Image</Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Add an Image</DialogTitle>
+                            </DialogHeader>
+                            <div className="space-y-4">
+                                <Button variant="outline" className="w-full" onClick={() => toast({ title: 'File Picker Mock', description: 'In a real app, this would open a file dialog.' })}>
+                                    <ImageIcon className="mr-2 h-4 w-4" /> Upload from Device
+                                </Button>
+                                <form onSubmit={handleAddFromUrl} className="flex gap-2">
+                                    <Input name="imageUrl" placeholder="Paste image URL..." />
+                                    <Button type="submit" size="icon"><Link className="h-4 w-4" /></Button>
+                                </form>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+                </div>
+            </div>
+        )}
       </div>
       <footer className="shrink-0 border-t bg-card p-4 space-y-4">
          <div className="flex items-center gap-4">
@@ -195,25 +248,7 @@ export function VisionBoard() {
             />
         </div>
         <div className="grid grid-cols-2 gap-2">
-            <Dialog>
-                <DialogTrigger asChild>
-                    <Button variant="outline"><Plus className="mr-2 h-4 w-4" /> Add Image</Button>
-                </DialogTrigger>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Add an Image</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                         <Button variant="outline" className="w-full" onClick={() => toast({ title: 'File Picker Mock', description: 'In a real app, this would open a file dialog.' })}>
-                            <ImageIcon className="mr-2 h-4 w-4" /> Upload from Device
-                        </Button>
-                        <form onSubmit={handleAddFromUrl} className="flex gap-2">
-                            <Input name="imageUrl" placeholder="Paste image URL..." />
-                            <Button type="submit" size="icon"><Link className="h-4 w-4" /></Button>
-                        </form>
-                    </div>
-                </DialogContent>
-            </Dialog>
+           {addImageAction}
             
             <Button variant="outline" onClick={handleResetLayout}><Trash2 className="mr-2 h-4 w-4" /> Reset</Button>
             <Button className="col-span-2" onClick={handleExport}><Download className="mr-2 h-4 w-4" /> Export as PNG</Button>
