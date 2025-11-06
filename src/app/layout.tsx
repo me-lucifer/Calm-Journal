@@ -2,6 +2,7 @@ import type {Metadata} from 'next';
 import './globals.css';
 import PhoneFrame from '@/components/PhoneFrame';
 import { Toaster } from '@/components/ui/toaster';
+import { ThemeProvider } from '@/components/ThemeProvider';
 
 export const metadata: Metadata = {
   title: 'Calm Journal',
@@ -22,10 +23,17 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        <PhoneFrame>
-            {children}
-        </PhoneFrame>
-        <Toaster />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <PhoneFrame>
+              {children}
+          </PhoneFrame>
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );
