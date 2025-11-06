@@ -3,6 +3,7 @@ export type Emotion = 'Happy' | 'Sad' | 'Angry' | 'Calm' | 'Excited';
 export interface JournalEntry {
   id: string;
   date: string;
+  title: string;
   emotion: Emotion;
   content: string;
 }

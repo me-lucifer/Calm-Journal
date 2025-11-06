@@ -63,8 +63,8 @@ export default function PageReader() {
             <span className="sr-only">Back to Pages</span>
           </Link>
         </Button>
-        <h1 className="font-headline text-lg text-foreground text-center truncate">
-          {entry.date}
+        <h1 className="font-headline text-lg text-foreground text-center truncate px-2">
+          {entry.title}
         </h1>
         <div className="flex items-center gap-2">
             <Button variant={isDrawMode ? "secondary" : "ghost"} size="icon" className="h-9 w-9" onClick={() => setIsDrawMode(!isDrawMode)}>
