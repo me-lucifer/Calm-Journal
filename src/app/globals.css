@@ -15,7 +15,7 @@
     --secondary: 338 33% 90%; /* Slightly darker blush */
     --secondary-foreground: 0 0% 17%; /* Graphite */
     --muted: 338 33% 85%; /* Even darker blush */
-    --muted-foreground: 0 0% 40%; /* Slightly darker muted text */
+    --muted-foreground: 0 0% 35%; /* Darkened for AA contrast */
     --accent: 345 100% 99%; /* Cream #FFF7F8 */
     --accent-foreground: 350 27% 61%; /* Rose */
     --destructive: 0 84.2% 60.2%;
