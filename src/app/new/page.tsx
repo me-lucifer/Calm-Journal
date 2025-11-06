@@ -10,7 +10,7 @@ export default function NewEntryPage() {
         <Button asChild variant="ghost" size="icon" className="h-9 w-9">
           <Link href="/home">
             <ArrowLeft className="h-5 w-5" />
-            <span className="sr-only">Back</span>
+            <span className="sr-only">Back to Home</span>
           </Link>
         </Button>
         <h1 className="font-headline text-xl text-foreground text-center flex-1 -ml-9">Quick Journal</h1>

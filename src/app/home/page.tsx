@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { useRouter } from 'next/navigation';
 
 function formatDate(date: Date) {
   return new Intl.DateTimeFormat('en-US', {
@@ -20,6 +21,11 @@ function formatDate(date: Date) {
 export default function HomePage() {
   const { toast } = useToast();
   const today = new Date();
+  const router = useRouter();
+
+  const handleMoodClick = () => {
+    router.push('/planner?tab=mood-tracker');
+  }
 
   return (
     <div className="flex h-full flex-col">
@@ -44,36 +50,19 @@ export default function HomePage() {
               href="#"
               icon={Smile}
               buttonText="Log"
-              onClick={() =>
-                toast({
-                  title: 'Mood Logged',
-                  description: "You're feeling great today!",
-                })
-              }
+              onClick={handleMoodClick}
             />
             <DashboardCard
               title="Recent Pages"
-              href="#"
+              href="/pages"
               icon={ClipboardList}
               buttonText="View"
-              onClick={() =>
-                toast({
-                  title: 'Coming Soon',
-                  description: 'This feature is not yet available.',
-                })
-              }
             />
              <DashboardCard
               title="Vision Board"
-              href="#"
+              href="/vision-board"
               icon={Clapperboard}
               buttonText="Continue"
-              onClick={() =>
-                toast({
-                  title: 'Coming Soon',
-                  description: 'This feature is not yet available.',
-                })
-              }
             />
           </div>
         </div>
@@ -107,7 +96,7 @@ function DashboardCard({
           className="w-full"
           variant="secondary"
           onClick={(e) => {
-            if (onClick && href === '#') {
+            if (onClick) {
               e.preventDefault();
               onClick();
             }
@@ -119,8 +108,8 @@ function DashboardCard({
     </Card>
   );
 
-  if (href === '#') {
-    return <div onClick={onClick}>{cardContent}</div>
+  if (href === '#' && onClick) {
+    return <div className="cursor-pointer" onClick={onClick}>{cardContent}</div>
   }
 
   return (
