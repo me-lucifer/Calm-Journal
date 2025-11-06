@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useContext, useCallback } from 'react';
 import Image from 'next/image';
 import { Plus, Trash2, Image as ImageIcon, Link, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { useAutosave } from '@/hooks/use-autosave';
+import { AppLayoutContext } from './AppLayout';
 
 type BoardImage = {
   id: string;
@@ -57,6 +59,24 @@ export function VisionBoard() {
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const boardRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  
+  const appLayoutContext = useContext(AppLayoutContext);
+
+  const handleSave = useCallback(() => {
+    // The useLocalStorage hook already persists changes,
+    // but we can log it for demonstration.
+    console.log('Autosaving vision board...');
+  }, []);
+
+  const { triggerSave } = useAutosave(handleSave, 1000, {
+    onStatusChange: appLayoutContext?.setStatus,
+  });
+
+  useEffect(() => {
+    if (images !== initialImages) {
+        triggerSave();
+    }
+  }, [images, triggerSave]);
 
   const handleZoomChange = (value: number[]) => {
     setZoom(value[0]);
@@ -93,6 +113,9 @@ export function VisionBoard() {
   };
 
   const handleMouseUp = () => {
+    if(draggingImage) {
+        triggerSave();
+    }
     setDraggingImage(null);
   };
   

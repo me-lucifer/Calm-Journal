@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useContext, useCallback } from 'react';
 import { notFound, useParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Edit, Pen, Type } from 'lucide-react';
@@ -13,6 +13,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { mockExercises } from '@/lib/exercises-data';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { useAutosave } from '@/hooks/use-autosave';
+import { AppLayoutContext } from '@/components/AppLayout';
 
 export default function ExercisePage() {
   const { id } = useParams();
@@ -22,6 +24,20 @@ export default function ExercisePage() {
   const [isDone, setIsDone] = useState(exercise?.isDone || false);
   const [drawPadActive, setDrawPadActive] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  
+  const [shortInput, setShortInput] = useState('');
+  const [longInput, setLongInput] = useState('');
+  
+  const appLayoutContext = useContext(AppLayoutContext);
+
+  const handleSave = useCallback(() => {
+    console.log('Autosaving exercise...', { shortInput, longInput });
+  }, [shortInput, longInput]);
+
+  const { triggerSave } = useAutosave(handleSave, 2000, {
+    onStatusChange: appLayoutContext?.setStatus
+  });
+
 
   if (!exercise) {
     notFound();
@@ -34,6 +50,7 @@ export default function ExercisePage() {
         title: `Exercise Marked as ${checked ? 'Done' : 'Incomplete'}`,
         description: `"${exercise.title}" status has been updated.`,
     })
+    triggerSave();
   }
 
   return (
@@ -68,7 +85,7 @@ export default function ExercisePage() {
                 <div className="space-y-3">
                     {exercise.tasks.map(task => (
                         <div key={task.id} className="flex items-center space-x-3">
-                            <Checkbox id={`task-${task.id}`} defaultChecked={task.completed} />
+                            <Checkbox id={`task-${task.id}`} defaultChecked={task.completed} onCheckedChange={() => triggerSave()} />
                             <Label htmlFor={`task-${task.id}`} className="text-base flex-1">{task.text}</Label>
                         </div>
                     ))}
@@ -80,14 +97,14 @@ export default function ExercisePage() {
             {exercise.shortInputPrompt && (
                 <div>
                     <Label htmlFor="short-input" className="font-headline text-lg text-foreground mb-2 block">{exercise.shortInputPrompt}</Label>
-                    <Input id="short-input" placeholder="Your short answer..." />
+                    <Input id="short-input" placeholder="Your short answer..." value={shortInput} onChange={(e) => { setShortInput(e.target.value); triggerSave(); }} />
                 </div>
             )}
             
             {exercise.longInputPrompt && (
                 <div>
                     <Label htmlFor="long-input" className="font-headline text-lg text-foreground mb-2 block">{exercise.longInputPrompt}</Label>
-                    <Textarea id="long-input" placeholder="Your detailed thoughts..." className="min-h-[150px]" />
+                    <Textarea id="long-input" placeholder="Your detailed thoughts..." className="min-h-[150px]" value={longInput} onChange={(e) => { setLongInput(e.target.value); triggerSave(); }} />
                 </div>
             )}
         </div>
@@ -108,6 +125,7 @@ export default function ExercisePage() {
                   width="600"
                   height="400"
                   className="w-full h-full rounded-md"
+                  onMouseDown={triggerSave}
                 />
               </div>
             )}

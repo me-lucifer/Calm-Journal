@@ -6,22 +6,49 @@ import { notFound, useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { mockEntries } from '@/lib/data';
 import { JournalEntry } from '@/lib/types';
-import { useState }
-from 'react';
+import { useState, useContext, useCallback } from 'react';
 import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { AppLayoutContext } from '@/components/AppLayout';
+import { useAutosave } from '@/hooks/use-autosave';
 
 export default function PageReader() {
   const { id } = useParams();
   const entry = mockEntries.find((e) => e.id === id);
   const [isDrawMode, setIsDrawMode] = useState(false);
+  const [content, setContent] = useState(entry?.content || '');
+  const [checklist, setChecklist] = useState({check1: false, check2: true, check3: false});
+
+  const appLayoutContext = useContext(AppLayoutContext);
+
+  const handleSave = useCallback(() => {
+    // In a real app, you would save the content and checklist state.
+    console.log('Autosaving page...', { content, checklist });
+  }, [content, checklist]);
+
+  const { triggerSave } = useAutosave(handleSave, 2000, {
+    onStatusChange: appLayoutContext?.setStatus,
+  });
 
   if (!entry) {
     notFound();
   }
+
+  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setContent(e.target.value);
+    triggerSave();
+  };
+
+  const handleChecklistChange = (checkId: keyof typeof checklist) => {
+    setChecklist(prev => {
+        const newState = {...prev, [checkId]: !prev[checkId]};
+        triggerSave();
+        return newState;
+    });
+  };
 
   const currentIndex = mockEntries.findIndex((e) => e.id === id);
   const prevEntry = currentIndex > 0 ? mockEntries[currentIndex - 1] : null;
@@ -59,14 +86,15 @@ export default function PageReader() {
         </div>
         
         {isDrawMode && (
-          <canvas className="absolute inset-0 z-20 w-full h-full" />
+          <canvas className="absolute inset-0 z-20 w-full h-full" onMouseDown={triggerSave} />
         )}
 
         <div className="relative z-10 p-6 space-y-6">
             <div className="p-4 bg-card/80 rounded-lg shadow-sm">
                 <h2 className="font-headline text-2xl mb-4 flex items-center gap-2"><Type className="w-6 h-6 text-primary"/> Editable Text Block</h2>
                 <textarea
-                    defaultValue={entry.content}
+                    value={content}
+                    onChange={handleContentChange}
                     className="w-full bg-transparent border-0 focus:ring-0 p-0 m-0 text-foreground/90 leading-relaxed"
                     rows={8}
                 />
@@ -76,15 +104,15 @@ export default function PageReader() {
                 <h2 className="font-headline text-2xl mb-4 flex items-center gap-2"><SquareCheckBig className="w-6 h-6 text-primary" /> Checklist</h2>
                 <div className="space-y-3">
                     <div className="flex items-center space-x-3">
-                        <Checkbox id="check1" />
+                        <Checkbox id="check1" checked={checklist.check1} onCheckedChange={() => handleChecklistChange('check1')} />
                         <Label htmlFor="check1" className="text-base flex-1">Did I drink enough water today?</Label>
                     </div>
                     <div className="flex items-center space-x-3">
-                        <Checkbox id="check2" defaultChecked />
+                        <Checkbox id="check2" checked={checklist.check2} onCheckedChange={() => handleChecklistChange('check2')} />
                         <Label htmlFor="check2" className="text-base flex-1">Did I take a moment for myself?</Label>
                     </div>
                      <div className="flex items-center space-x-3">
-                        <Checkbox id="check3" />
+                        <Checkbox id="check3" checked={checklist.check3} onCheckedChange={() => handleChecklistChange('check3')} />
                         <Label htmlFor="check3" className="text-base flex-1">Did I move my body?</Label>
                     </div>
                 </div>

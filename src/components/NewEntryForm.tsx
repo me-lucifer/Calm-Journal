@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback, useContext } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -10,6 +10,8 @@ import { Switch } from '@/components/ui/switch';
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Pen, Type } from 'lucide-react';
+import { useAutosave } from '@/hooks/use-autosave';
+import { AppLayoutContext } from './AppLayout'; // Assuming AppLayout provides a context
 
 export function NewEntryForm() {
   const [title, setTitle] = useState('');
@@ -18,6 +20,17 @@ export function NewEntryForm() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const router = useRouter();
+  
+  const appLayoutContext = useContext(AppLayoutContext);
+
+  const handleSave = useCallback(() => {
+    // This is where you'd save to a real backend
+    console.log('Autosaving...', { title, content });
+  }, [title, content]);
+  
+  const { triggerSave } = useAutosave(handleSave, 2000, {
+      onStatusChange: appLayoutContext?.setStatus,
+  });
 
   const getCanvasContext = () => {
     const canvas = canvasRef.current;
@@ -43,6 +56,7 @@ export function NewEntryForm() {
     const pos = getEventPosition(e);
     ctx.beginPath();
     ctx.moveTo(pos.x, pos.y);
+    triggerSave();
   };
 
   const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
@@ -52,6 +66,7 @@ export function NewEntryForm() {
     const pos = getEventPosition(e);
     ctx.lineTo(pos.x, pos.y);
     ctx.stroke();
+    triggerSave();
   };
 
   const stopDrawing = () => {
@@ -78,13 +93,23 @@ export function NewEntryForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ title, content, isHandwriting });
+    handleSave(); // final save
     toast({
       title: 'Saved locally',
       description: 'Your journal entry has been saved.',
     });
     router.push('/home');
   };
+  
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setTitle(e.target.value);
+      triggerSave();
+  }
+
+  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setContent(e.target.value);
+      triggerSave();
+  }
 
   const isSaveDisabled = title.trim() === '' || (!isHandwriting && content.trim() === '');
 
@@ -98,7 +123,7 @@ export function NewEntryForm() {
           <Input
             id="title"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={handleTitleChange}
             placeholder="A title for your entry"
             className="text-base"
             required
@@ -140,7 +165,7 @@ export function NewEntryForm() {
           <Textarea
             id="content"
             value={content}
-            onChange={(e) => setContent(e.target.value)}
+            onChange={handleContentChange}
             placeholder="Write about your day..."
             className="min-h-[250px] text-base leading-relaxed"
             required={!isHandwriting}
