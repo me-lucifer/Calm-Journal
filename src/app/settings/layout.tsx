@@ -14,11 +14,11 @@ export default function SettingsLayout({
       review={{
         screenName: "Settings",
         keyInteractions: [
-          "Switch between 'Appearance', 'Account', and 'Owner' tabs.",
+          "Switch between tabs.",
           "Toggle Dark Mode.",
           "View mock account information.",
-          "Attempt to 'Sync to Cloud' to see prototype message.",
-          "Enable/disable 'Owner Review Mode' from the Owner tab."
+          "Enable/disable 'Owner Review Mode'.",
+          "Restart the demo from the Help tab."
         ]
       }}
     >

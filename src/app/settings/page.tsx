@@ -18,6 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   AlertDialog,
   AlertDialogAction,
+  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -25,13 +26,15 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Moon, Sun, Eye } from 'lucide-react';
+import { Moon, Sun, Eye, Info, RefreshCcw } from 'lucide-react';
 import { useLocalStorage } from '@/hooks/use-local-storage';
+import { useRouter } from 'next/navigation';
 
 export default function SettingsPage() {
   const { setTheme, theme } = useTheme();
   const [isDark, setIsDark] = useState(theme === 'dark');
   const [isReviewMode, setIsReviewMode] = useLocalStorage('owner-review-mode', false);
+  const router = useRouter();
 
   const handleThemeChange = (checked: boolean) => {
     const newTheme = checked ? 'dark' : 'light';
@@ -43,13 +46,21 @@ export default function SettingsPage() {
     setIsReviewMode(checked);
   };
 
+  const handleRestartDemo = () => {
+    if (typeof window !== 'undefined') {
+      window.localStorage.clear();
+      router.push('/');
+    }
+  };
+
   return (
     <div className="p-6">
       <Tabs defaultValue="appearance" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="appearance">Appearance</TabsTrigger>
           <TabsTrigger value="account">Account</TabsTrigger>
           <TabsTrigger value="owner">Owner</TabsTrigger>
+          <TabsTrigger value="help">Help</TabsTrigger>
         </TabsList>
         <TabsContent value="appearance">
           <Card>
@@ -156,6 +167,53 @@ export default function SettingsPage() {
                   onCheckedChange={handleReviewModeChange}
                 />
               </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="help">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2"><Info /> Handoff Guide</CardTitle>
+              <CardDescription>
+                Welcome to the Calm Journal prototype. Here’s what you need to know.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-4 text-sm text-foreground/90">
+                <div>
+                  <h3 className="font-semibold mb-1">Prototype Scope</h3>
+                  <p>This is an interactive prototype. Features are functional on the front-end, but there is no real backend integration. All data is stored locally in your browser and will be reset if you clear your cache or click "Restart Demo".</p>
+                </div>
+                <div>
+                  <h3 className="font-semibold mb-1">Simulated Autosave</h3>
+                  <p>An autosave feature is simulated on editable screens like the Quick Journal, Page Reader, Exercises, and Vision Board. A "Saved" indicator will appear in the header after you stop editing to mimic real-world behavior.</p>
+                </div>
+                 <div>
+                  <h3 className="font-semibold mb-1">Navigation</h3>
+                  <p>Use the bottom navigation bar to switch between the main sections of the app. The home screen cards provide quick access to key features. The back arrow in the header will take you to the previous screen in most flows.</p>
+                </div>
+              </div>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" className="w-full">
+                    <RefreshCcw className="mr-2 h-4 w-4" /> Restart Demo
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will clear all your local data, including journal entries, mood logs, and vision board images, and return you to the splash screen.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleRestartDemo}>
+                      Restart
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </CardContent>
           </Card>
         </TabsContent>
